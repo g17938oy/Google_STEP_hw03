@@ -33,10 +33,10 @@ public class calculator_modularize {
     }
     
     private static int readMinus(String line, int index) {
-	if(! Character.isDigit(line.charAt(index - 1))) {
+	if(index > 0 && ! Character.isDigit(line.charAt(index - 1))) {
 	    System.out.println("Double symbol is invail: " +line.charAt(index - 1) + ", " + line.charAt(index));
 	    System.exit(1);//また入力をうけつけたい
-	}
+	} 
 	tokens.add(new Token("MINUS"));
 	return index + 1;
     }
@@ -133,8 +133,31 @@ public class calculator_modularize {
     }
     private void runTest() {
 	System.out.println("==== Test started! ====");
+	test("1");
+	test("-3.3");
+	
 	test("1+2");
-	test("1.0+2.1-3");
+	test("2.7-4.2");
+	test("-1+2.3");
+	test("-5-8.3");
+	
+	test("1.2+2.3+3.4");
+	test("-8.3-10.3-3.5");
+	
+	test("2*3.2");
+	test("4/5");
+	test("-3*4.2");
+	test("-12/4");
+	
+	test("5*3.2*4");
+	test("-12/3/2");
+	
+	test("6*3.2+5");
+	test("-98/7+2.4");
+	test("4.6+8*3.8");
+	test("-9.6+77/11");
+	
+	
 	System.out.println("==== Test finished! ====");
     }
     

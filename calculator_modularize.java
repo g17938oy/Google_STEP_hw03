@@ -22,6 +22,7 @@ public class calculator_modularize {
 	tokens.add(new Token("NUMBER", number));
 	return index;
     }
+    
     private static int readPlus(String line, int index) {
 	if(! Character.isDigit(line.charAt(index - 1))) {
 	    System.out.println("Double symbol is invail: " +line.charAt(index - 1) + ", " + line.charAt(index));
@@ -30,6 +31,7 @@ public class calculator_modularize {
 	tokens.add(new Token("PLUS"));
 	return index + 1;
     }
+    
     private static int readMinus(String line, int index) {
 	if(! Character.isDigit(line.charAt(index - 1))) {
 	    System.out.println("Double symbol is invail: " +line.charAt(index - 1) + ", " + line.charAt(index));
@@ -38,6 +40,25 @@ public class calculator_modularize {
 	tokens.add(new Token("MINUS"));
 	return index + 1;
     }
+
+    private static int readMult(String line, int index) {
+	if(! Character.isDigit(line.charAt(index - 1))) {
+	    System.out.println("Double symbol is invail: " +line.charAt(index - 1) + ", " + line.charAt(index));
+	    System.exit(1);//また入力をうけつけたい
+	}
+	tokens.add(new Token("MULT"));
+	return index + 1;
+    }
+
+    private static int readDiv(String line, int index) {
+	if(! Character.isDigit(line.charAt(index - 1))) {
+	    System.out.println("Double symbol is invail: " +line.charAt(index - 1) + ", " + line.charAt(index));
+	    System.exit(1);//また入力をうけつけたい
+	}
+	tokens.add(new Token("DIV"));
+	return index + 1;
+    }
+    
     private static void tokenize(String line) {
 	int index = 0;
 	while (index < line.length()) {
@@ -47,19 +68,50 @@ public class calculator_modularize {
 		index = readPlus(line, index);
 	    } else if (line.charAt(index) == '-') {
 		index = readMinus(line, index);
+	    } else if (line.charAt(index) == '*') {
+		index = readMult(line, index);
+	    } else if (line.charAt(index) == '/') {
+		index = readDiv(line, index);
 	    } else {
 		System.out.println("Invalid character found: " + line.charAt(index));
 		System.exit(1);//また入力をうけつけたい
 	    }
-	}
-			
+	}			
     }
+    
+    private static int evaluateMult(int index) {
+	double num = tokens.get(index - 2).number * tokens.get(index).number;
+	for(int i = 0; i < 3; i++) tokens.remove(index -2);
+	tokens.add(index - 2, new Token("NUMBER", num));
+	return index - 2;
+    }
+    
+    private static int evaluateDiv(int index) {
+	double num = tokens.get(index - 2).number / tokens.get(index).number;
+	for(int i = 0; i < 3; i++) tokens.remove(index -2);
+	tokens.add(index - 2, new Token("NUMBER", num));
+	return index - 2;
+    }
+    
     private static double evaluate() {
 	double answer = 0;	
 	tokens.add(0, new Token("PLUS"));
 	int index = 1;
+	
 	while (index < tokens.size()) {
-	    //System.out.println(tokens.get(index).type + ":" +tokens.get(index).number);
+	    if (tokens.get(index).type.equals("NUMBER")) {
+		if (tokens.get(index - 1).type.equals("MULT")) {
+		    index = evaluateMult(index);
+		} else if (tokens.get(index - 1).type.equals("DIV")) {
+		    index = evaluateDiv(index);
+		}
+	    }
+	    index++;
+	}
+	
+	index = 1;
+	
+	while (index < tokens.size()) {
 	    if (tokens.get(index).type.equals("NUMBER")) {
 		if (tokens.get(index - 1).type.equals("PLUS")) {
 		    answer += tokens.get(index).number;
